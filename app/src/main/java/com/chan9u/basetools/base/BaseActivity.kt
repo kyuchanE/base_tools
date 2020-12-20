@@ -135,6 +135,8 @@ abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
         rxLifeCycle.onNext(ActivityEvent.DESTROY)
     }
 
+    open fun initViews() {}
+
     /**
      * Rx 핸들을 핸들러에 등록
      *

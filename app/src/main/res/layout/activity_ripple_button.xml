@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:context=".ex.RippleButtonActivity">
+
+        <androidx.appcompat.widget.AppCompatButton
+            android:id="@+id/btn_ripple"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            app:layout_constraintTop_toTopOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:layout_marginTop="55dp"
+            android:background="@drawable/ripple_custom"
+            android:textColor="#000000"
+            android:text="ripple_effect"/>
+
+        <ImageView
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:src="@drawable/ic_baseline_adb_24"
+            app:layout_constraintTop_toBottomOf="@id/btn_ripple"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            android:clickable="true"
+            android:background="@drawable/ripple_custom"
+            android:layout_marginTop="55dp"/>
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>
