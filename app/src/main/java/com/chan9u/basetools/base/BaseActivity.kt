@@ -5,26 +5,32 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Build
 import android.os.Bundle
+import android.os.Process
 import android.util.Pair
 import android.view.View
 import android.view.ViewGroup
+import androidx.annotation.StringRes
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
 import com.chan9u.basetools.R
+import com.chan9u.basetools.custom.view.DefaultDialog
 import com.chan9u.basetools.databinding.LoadingBinding
-import com.chan9u.basetools.utils.bind
-import com.chan9u.basetools.utils.bindView
-import com.chan9u.basetools.utils.setOnEvents
+import com.chan9u.basetools.utils.*
+import com.scottyab.rootbeer.RootBeer
 import com.trello.rxlifecycle2.android.ActivityEvent
 import io.reactivex.Observable
+import io.reactivex.Single
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
+import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
+import kotlin.system.exitProcess
 
 /*------------------------------------------------------------------------------
  * DESC    : 액티비티 기본 정의
@@ -65,8 +71,10 @@ abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
     // dialogList
     private val dialogList = mutableListOf<Dialog>()
 
-    // loadging
+    // loading
     private lateinit var loadingBinding: LoadingBinding
+    // 로딩 뷰 사용 카운트
+    private val loadingCount = AtomicInteger()
 
     // 권한 허용 액션
     private var granted: () -> Unit = {}
@@ -102,6 +110,23 @@ abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         rxLifeCycle.onNext(ActivityEvent.RESUME)
+
+        // 인트로는 자체 검사
+        if (false) {
+            // 단말기가 루팅되었는지 체크
+            Single.fromCallable { RootBeer(this).isRooted || TigerTeam.detect() }
+                .subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .filter { it }
+                .doOnSuccess {
+                dialog("앱 위변조가 발견되어 종료합니다.")
+                    .right {
+                        Process.killProcess(Process.myPid())
+                        exitProcess(10)
+                    }
+                }
+                .subscribe()
+        }
     }
 
     override fun onStart() {
@@ -238,15 +263,49 @@ abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
      * 로딩표시
      */
     fun showLoading() {
-
+        if (loadingCount.incrementAndGet() == 1) {
+            runOnUiThread {
+                loadingBinding.root.show()
+            }
+        }
     }
 
     /**
      * 로딩숨김
      */
     fun hideLoading() {
-
+        if (loadingCount.decrementAndGet() == 0) {
+            runOnUiThread {
+                loadingBinding.root.gone()
+            }
+        }
     }
+
+    /**
+     * 기본 다이얼로그에 메시지 설정
+     *
+     * @param message 메시지
+     *
+     * @return 다이얼로그
+     */
+    fun dialog(message: String = "") = DefaultDialog(this).apply {
+        right()
+        if (message.isNotEmpty()) message(message)
+    }
+
+    fun dialog(action: DefaultDialog.() -> Unit) = DefaultDialog(this).apply {
+        right()
+        action()
+    }
+
+    /**
+     * 기본 다이얼로그에 메시지 설정
+     *
+     * @param res 메시지 리소스
+     *
+     * @return 다이얼로그
+     */
+    fun dialog(@StringRes res: Int) = dialog(getString(res))
 
     /**
      * 퍼미션 다이얼로그가 보이기전 이벤트

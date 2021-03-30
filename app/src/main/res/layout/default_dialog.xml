@@ -1,6 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
-<layout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools">
+<layout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    tools:context=".base.BaseActivity">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -17,19 +20,71 @@
             android:gravity="center_horizontal"
             android:orientation="vertical"
             android:paddingTop="30dp"
-            android:background="@drawable/bg_ffffff_round_5">
+            android:background="@drawable/bg_ffffff_round_3">
 
             <TextView
+                android:id="@+id/tv_message"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center_horizontal"
-                android:layout_marginHorizontal="15dp"
-                android:textSize="15dp"
+                android:layout_marginHorizontal="20dp"
+                android:textSize="16dp"
                 android:textColor="#666666"
-                tools:text="기본 알럿 기본 알럿 기본 알럿"/>
+                tools:text="앱을 종료하시겠습니까? 앱을 종료하시겠습니까? 앱을 종료하시겠습니까?" />
 
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="30dp"
+                android:background="#eeeeee"/>
+
+            <LinearLayout
+                android:id="@+id/ll_btns"
+                android:layout_width="match_parent"
+                android:layout_height="50dp"
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/b_left"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    style="@style/boldStyle"
+                    android:textSize="16dp"
+                    android:textColor="#333333"
+                    android:text="취소"
+                    android:background="#00000000"
+                    android:stateListAnimator="@null"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    tools:textStyle="bold"/>
+
+                <View
+                    android:id="@+id/v_hline"
+                    android:layout_width="1dp"
+                    android:layout_height="match_parent"
+                    android:background="#eeeeee"
+                    android:visibility="gone"
+                    tools:visibility="visible"/>
+
+                <Button
+                    android:id="@+id/b_right"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:textSize="16dp"
+                    android:textColor="#333333"
+                    android:text="확인"
+                    android:background="#00000000"
+                    android:stateListAnimator="@null"
+                    android:visibility="gone"
+                    tools:visibility="visible"
+                    tools:textStyle="bold"/>
+
+            </LinearLayout>
 
         </LinearLayout>
 
     </LinearLayout>
+
+
 </layout>
