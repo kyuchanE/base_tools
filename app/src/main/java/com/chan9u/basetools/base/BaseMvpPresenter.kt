@@ -1,5 +1,6 @@
 package com.chan9u.basetools.base
 
+import com.chan9u.basetools.activity.main.MainActivity
 import com.chan9u.basetools.utils.L
 import com.chan9u.basetools.utils.log
 import com.hannesdorfmann.mosby3.mvp.MvpBasePresenter
@@ -8,6 +9,7 @@ import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.disposables.CompositeDisposable
 import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
+import kotlinx.coroutines.Job
 import java.util.concurrent.atomic.AtomicInteger
 
 /*------------------------------------------------------------------------------

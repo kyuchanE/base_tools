@@ -14,10 +14,14 @@ import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
 import androidx.databinding.ViewDataBinding
+import com.chan9u.basetools.BuildConfig
 import com.chan9u.basetools.R
 import com.chan9u.basetools.custom.view.DefaultDialog
 import com.chan9u.basetools.databinding.LoadingBinding
+import com.chan9u.basetools.listener.RequestSubscriber
 import com.chan9u.basetools.utils.*
+import com.google.gson.JsonObject
+import com.google.gson.JsonParser
 import com.scottyab.rootbeer.RootBeer
 import com.trello.rxlifecycle2.android.ActivityEvent
 import io.reactivex.Observable
@@ -28,14 +32,27 @@ import io.reactivex.disposables.Disposable
 import io.reactivex.schedulers.Schedulers
 import io.reactivex.subjects.BehaviorSubject
 import io.reactivex.subjects.PublishSubject
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import retrofit2.HttpException
+import java.net.ConnectException
+import java.net.SocketTimeoutException
+import java.net.UnknownHostException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
+import kotlin.coroutines.CoroutineContext
 import kotlin.system.exitProcess
 
 /*------------------------------------------------------------------------------
  * DESC    : 액티비티 기본 정의
  *------------------------------------------------------------------------------*/
-abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
+abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity(), CoroutineScope {
+
+    // coroutineScope 관리 
+    lateinit var job: Job
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main + job
 
     companion object{
         // 이벤트 주기
@@ -81,11 +98,16 @@ abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
     // 권한 거절 액션
     private var notGranted: () -> Unit = {}
 
+    // 기본 에러 핸들러 on/off
+    var useHandleError = true
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         binding = bind(layoutId)
         binding.setOnEvents()
+
+        job = Job()
 
         loadingBinding = bindView(R.layout.loading)
         (binding.root as ViewGroup).addView(
@@ -145,6 +167,8 @@ abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
             if (it.isShowing) it.dismiss()
         }
         dialogList.clear()
+
+        job.cancel()
 
         super.finish()
 
@@ -282,6 +306,36 @@ abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
     }
 
     /**
+     * 공통 속성을 정의한 Subscriber
+     *
+     * @param useLoading 로딩 사용여부
+     * @return
+     */
+    fun <T> buildSubscriber(useLoading: Boolean = true) = object : RequestSubscriber<T>() {
+        override fun onStart() {
+            super.onStart()
+            if (useLoading) showLoading()
+        }
+
+        override fun onError(t: Throwable) {
+            if (!skipErrorHandle) handleError(t)
+            if (useLoading) hideLoading()
+        }
+
+        override fun onNext(t: T) {
+            if (!skipErrorHandle) {
+                if (t is JsonObject) {
+                    handleServerCode(t)
+                }
+            }
+        }
+
+        override fun onComplete() {
+            if (useLoading) hideLoading()
+        }
+    }
+
+    /**
      * 기본 다이얼로그에 메시지 설정
      *
      * @param message 메시지
@@ -405,6 +459,65 @@ abstract class BaseActivity<B: ViewDataBinding>: AppCompatActivity() {
         }
 
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
+    }
+
+    /**
+     * 서버 에러코드 처리
+     */
+    fun handleServerCode(result: JsonObject) {
+        val status = result.asInt("returnStatus")
+        val code = result.asString("returnCode")
+        val message = result.asString("returnMessage")
+
+        // (!200 || !SUCCESS) && !401 && message
+        if (((status != 200 || !code.equals("SUCCESS", true)) && code != "0000" && status != 401 && message.isNotEmpty())) {
+            dialog(message)
+        }
+    }
+
+    /**
+     * 예상되는 예외처리
+     *
+     * @param t
+     */
+    fun handleError(t: Throwable) {
+        if (useHandleError) {
+            when (t) {
+                is HttpException -> {
+                    // 에러코드별 핸들링
+                    when (t.code()) {
+                        401 -> {
+                        }
+                        400, 404, 503 -> {
+                        }
+                        500 -> {
+                            dialog("서비스가 지연되고 있습니다. 잠시 후 다시 시도해주시기 바랍니다.")
+                                .right {
+                                    finish()
+                                }
+                        }
+                        else -> {
+                        }
+                    }
+
+                }
+                is ConnectException -> {
+                    L.e("ConnectException")
+                }
+                is UnknownHostException -> {
+                    L.e("UnknownHostException")
+                }
+                is SocketTimeoutException -> {
+                    L.e("SocketTimeoutException")
+                }
+                else -> {
+                }
+            }
+        }
+
+        if (BuildConfig.DEV) {
+            L.e(t)
+        }
     }
 
 }

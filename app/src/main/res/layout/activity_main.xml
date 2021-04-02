@@ -6,7 +6,7 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:background="#eeeeee"
-        tools:context=".activity.MainActivity">
+        tools:context=".activity.main.MainActivity">
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -19,6 +19,24 @@
                 android:layout_height="wrap_content"
                 android:textColor="#000000"
                 android:text="rippe"
+                android:background="@drawable/bg_ffffff_round_5"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_coroutine"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:text="coroutine"
+                android:tag="click"
+                android:background="@drawable/bg_ffffff_round_5"/>
+
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btn_test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#000000"
+                android:text="test"
+                android:tag="click"
                 android:background="@drawable/bg_ffffff_round_5"/>
 
         </LinearLayout>

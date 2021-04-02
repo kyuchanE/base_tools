@@ -16,7 +16,7 @@
 
         <activity android:name=".ex.RippleButtonActivity"></activity>
         <activity android:name=".activity.GateActivity" />
-        <activity android:name=".activity.MainActivity">
+        <activity android:name=".activity.main.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

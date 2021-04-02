@@ -39,13 +39,17 @@ android {
 
     flavorDimensions 'default'
     productFlavors {
-
+        def CONFIG = { k -> "\"${project.properties.get(k)}\"" }
         dev {
-
+            // 디버그앱 이름 설정
+            manifestPlaceholders = [appLabel: "_DEV"]
+            buildConfigField "String", "BASE_URL", CONFIG("debug.base.url")
         }
 
         rel {
-
+            // 디버그앱 이름 설정
+            manifestPlaceholders = [appLabel: "_REL"]
+            buildConfigField "String", "BASE_URL", CONFIG("release.base.url")
         }
     }
 
@@ -88,7 +92,7 @@ dependencies {
     // eventbus
     implementation 'org.greenrobot:eventbus:3.2.0'
     // okhttp
-    implementation 'com.squareup.okhttp3:okhttp:4.8.0'
+    implementation 'com.squareup.okhttp3:okhttp:4.9.1'
     implementation 'com.squareup.okhttp3:okhttp-urlconnection:4.7.2'
     implementation 'com.squareup.okhttp3:logging-interceptor:4.7.2'
     implementation('com.github.ihsanbal:LoggingInterceptor:3.1.0') {
@@ -101,8 +105,8 @@ dependencies {
     implementation 'com.squareup.retrofit2:converter-scalars:2.9.0'
     implementation 'com.squareup.retrofit2:adapter-rxjava2:2.9.0'
     // stetho
-    implementation 'com.facebook.stetho:stetho:1.5.1'
-    implementation 'com.facebook.stetho:stetho-okhttp3:1.5.1'
+    implementation 'com.facebook.stetho:stetho:1.6.0'
+    implementation 'com.facebook.stetho:stetho-okhttp3:1.6.0'
     // blankj util
     implementation 'com.blankj:utilcode:1.29.0'
     // ktx
@@ -142,4 +146,8 @@ dependencies {
     implementation 'com.android.support:multidex:1.0.3'
     // rootbeer
     implementation 'com.scottyab:rootbeer-lib:0.0.8'
+
+    // kotlin coroutine
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-android:1.3.9'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.4.3'
 }

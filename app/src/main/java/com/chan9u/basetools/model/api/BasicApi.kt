@@ -2,6 +2,7 @@ package com.chan9u.basetools.model.api
 
 import com.google.gson.JsonObject
 import io.reactivex.Flowable
+import kotlinx.coroutines.flow.Flow
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
@@ -19,6 +20,12 @@ interface BasicApi {
         @QueryMap params: Map<String, Any?> = mapOf(),
         @HeaderMap headers: Map<String, Any?> = mapOf()
     ): Flowable<JsonObject>
+
+    @GET
+    suspend fun cGet(
+            @Url url: String,
+            @QueryMap params: Map<String, Any?> = mapOf()
+    ): Flow<JsonObject>
 
     @FormUrlEncoded
     @POST

@@ -38,6 +38,24 @@ import pyxis.uzuki.live.richutilskt.utils.browse
  * DESC    : 확장함수
  *------------------------------------------------------------------------------*/
 
+////////////////////////////// Test //////////////////////////////
+
+inline fun String?.ckTest(): Boolean? {
+    this?.let {
+        return this.equals("hwang") || this.equals("chan") || this.equals("kyu")
+    } ?: return null
+}
+
+val hTest: String?.() -> Boolean? = {
+    this?.let {
+        this.equals("hwang") || this.equals("chan") || this.equals("kyu")
+    }
+}
+
+val String.kyuTest: String get() {
+    return "KYU_TEST"
+}
+
 ////////////////////////////// Any //////////////////////////////
 
 fun Any?.log(prefix: String = ""): Any? {
@@ -335,6 +353,8 @@ val String.asJsonObject: JsonObject get() = try {
     "val String.asJsonObject 예외".log()
     JsonObject()
 }
+
+val String.asUrl: String get() = getUrl(this)
 
 ////////////////////////////// Int //////////////////////////////
 

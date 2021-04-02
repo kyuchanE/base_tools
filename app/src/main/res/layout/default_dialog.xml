@@ -48,7 +48,6 @@
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    style="@style/boldStyle"
                     android:textSize="16dp"
                     android:textColor="#333333"
                     android:text="취소"

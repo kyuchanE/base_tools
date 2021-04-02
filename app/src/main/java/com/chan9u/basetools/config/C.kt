@@ -1,5 +1,7 @@
 package com.chan9u.basetools.config
 
+import com.chan9u.basetools.BuildConfig
+
 /*------------------------------------------------------------------------------
  * DESC    : 설정값
  *------------------------------------------------------------------------------*/
@@ -7,7 +9,7 @@ package com.chan9u.basetools.config
 object C {
 
     object init {
-        var logo_url = ""                       // 로고 URL
+        var url = BuildConfig.BASE_URL      // API prefix
     }
 
     object main {
